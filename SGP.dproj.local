@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2015/08/24 20:14:46.000.791,C:\Users\Ribamar\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Ribamar\Desktop\SGP\SGP.dproj</Transaction>
+    <Transaction>2015/09/11 13:45:43.000.225,E:\RW\SGP\Unit1.pas=E:\RW\SGP\FRM\U_FrmCadastroPedido.pas</Transaction>
+    <Transaction>2015/09/11 13:45:43.000.225,E:\RW\SGP\Unit1.dfm=E:\RW\SGP\FRM\U_FrmCadastroPedido.dfm</Transaction>
+    <Transaction>2015/09/12 07:31:09.000.763,E:\RW\SGP\FRM\U_FrmDuplicatas.dfm=E:\RW\SGP\Unit1.dfm</Transaction>
+    <Transaction>2015/09/12 07:31:42.000.624,E:\RW\SGP\DTM\U_DtmDadosDuplicatas.dfm=E:\RW\SGP\Unit1.dfm</Transaction>
+    <Transaction>2015/09/25 00:22:16.000.575,E:\RW\SGP\FRM\U_FrmBaixa.dfm=E:\RW\SGP\Unit1.dfm</Transaction>
+    <Transaction>2015/09/25 12:48:15.000.055,E:\RW\SGP\Unit1.dfm=E:\RW\SGP\DTM\U_DtmDadosBaixa.dfm</Transaction>
+    <Transaction>2015/09/25 12:48:15.000.055,E:\RW\SGP\Unit1.pas=E:\RW\SGP\DTM\U_DtmDadosBaixa.pas</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,35 @@
+MODIFICAÇÕES SGP (SISTEMA DE GESTÃO DE PEDIDO = CITA)
+
+Cadastro de Pedidos  (OK)
+-----------------------------
+Teria como ampliar a tela para aparecer mais informação. 
+Exemplo nesta tela como estar o valor do pedido esta oculto.  
+Tenho que arrastar com mouse para aparecer. 
+Veja o foto abaixo
+
+
+Filtro Relatorio de Pedidos
+--------------------
+Neste relatório seria importante para filtrar por data previsto de faturamento.  
+Ex.  Quero olhar os pedidos previsto para faturar em agosto.  
+Então vou colocar em filtro 01.08.16 a 31.08.2016. 
+Quando vamos cadastrar o pedido agente coloca previsto para faturar em tal mês. ...
+O que está funcionando ele filtra pelo dia que cadastramos o pedido.  Tem buscar uma data bem anterior.
+
+
+
+
+
+Neste relatório nos produtos recebidos constasse o número da nota fiscal e data do faturamento.  
+Este é pedido só recebi um parte falta a outra
+
+
+
+
+Quando vou baixar um pedido tem visualizar e depois baixar.  
+Tem opção de colocar o número da nota fiscal e data do faturamento.  
+Ocorre que muitos pedidos não recebo todos os produtos em só nota fiscal. 
+Quando eu coloco o número da nota fiscal e data do faturamento e quando 
+olhar em pedido fechado não consigo visualizar estas notas fiscais que foram baixadas. 
+Seria interessante que os produtos que foram baixados como parte daquele pedido 
+constasse a referida e data faturamento que foi informado na hora da baixa.

@@ -1,0 +1,304 @@
+unit U_FrmFiltroRelPedido;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, U_FrmPadrao, Vcl.StdCtrls, Vcl.Buttons,
+  Vcl.ExtCtrls, Vcl.Mask,U_DtmDadosRelatorioPedido, Data.DB, Vcl.ComCtrls;
+
+type
+  TFrmFiltroRelPedido = class(TFrmPadrao)
+    pnl1: TPanel;
+    pnl2: TPanel;
+    rg_StatusPedido: TRadioGroup;
+    lbl3: TLabel;
+    edtNumPedido: TEdit;
+    grpFornecedor: TGroupBox;
+    edtCodFornecedor: TEdit;
+    edtNomeFornecedor: TEdit;
+    lbl4: TLabel;
+    lbl5: TLabel;
+    btnConsultaFornecedor: TSpeedButton;
+    grpLoja: TGroupBox;
+    lbl6: TLabel;
+    lbl7: TLabel;
+    btnConsultaLoja: TSpeedButton;
+    edtCodLoja: TEdit;
+    edtNomeLoja: TEdit;
+    btnRelatorio: TBitBtn;
+    rg_TipoRelatorio: TRadioGroup;
+    grpDataPrevFaturamento: TGroupBox;
+    dtpDataPrevFaturamentoAte: TDateTimePicker;
+    Label2: TLabel;
+    dtpDataPrevFaturamentoDe: TDateTimePicker;
+    chkDataPrevFaturamento: TCheckBox;
+    grpDataPedido: TGroupBox;
+    Label1: TLabel;
+    dtpDataFim: TDateTimePicker;
+    dtpDataInicio: TDateTimePicker;
+    chkDataPedido: TCheckBox;
+    procedure btnRelatorioClick(Sender: TObject);
+    procedure btnConsultaFornecedorClick(Sender: TObject);
+    procedure btnConsultaLojaClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure chkDataPedidoClick(Sender: TObject);
+    procedure chkDataPrevFaturamentoClick(Sender: TObject);
+  private
+    { Private declarations }
+    function getPedidos:Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmFiltroRelPedido: TFrmFiltroRelPedido;
+
+implementation
+
+{$R *.dfm}
+
+uses U_FrmRelatorioPedido, U_DtmDadosFornecedor,
+  U_FrmSelecaoPadrao, U_DtmDadosLoja, U_BibliotecaFuncoes;
+
+procedure TFrmFiltroRelPedido.btnConsultaFornecedorClick(Sender: TObject);
+begin
+  inherited;
+
+  try
+    DtmDadosFornecedor := TDtmDadosFornecedor.Create(nil);
+    FrmSelecaoPadrao := TFrmSelecaoPadrao.Create(nil, DtmDadosFornecedor.cdsPesquisacodigo, DtmDadosFornecedor.cdsPesquisarazao_social);
+    DtmDadosFornecedor.listar;
+    FrmSelecaoPadrao.dbgrdConsulta.DataSource := DtmDadosFornecedor.dsPesquisa;
+    FrmSelecaoPadrao.ShowModal;
+    if FrmSelecaoPadrao.ModalResult = mrOk then
+    begin
+      edtCodFornecedor.Text := FormatFloat('000', DtmDadosFornecedor.cdsPesquisacodigo.AsInteger);
+      edtNomeFornecedor.Text := DtmDadosFornecedor.cdsPesquisarazao_social.AsString;
+      Perform(WM_NEXTDLGCTL,0,0);
+    end;
+  finally
+    FreeAndNil(FrmSelecaoPadrao);
+    FreeAndNil(DtmDadosFornecedor);
+  end;
+
+
+end;
+
+procedure TFrmFiltroRelPedido.btnConsultaLojaClick(Sender: TObject);
+begin
+  inherited;
+  try
+    DtmDadosLoja := TDtmDadosLoja.Create(nil);
+    FrmSelecaoPadrao := TFrmSelecaoPadrao.Create(nil, DtmDadosLoja.cdsPesquisacodigo, DtmDadosLoja.cdsPesquisadescricao);
+    DtmDadosLoja.listar;
+    FrmSelecaoPadrao.dbgrdConsulta.DataSource := DtmDadosLoja.dsPesquisa;
+    FrmSelecaoPadrao.ShowModal;
+    if FrmSelecaoPadrao.ModalResult = mrOk then
+    begin
+      edtCodLoja.Text := FormatFloat('000', DtmDadosLoja.cdsPesquisacodigo.AsInteger);
+      edtNomeLoja.Text := DtmDadosLoja.cdsPesquisadescricao.AsString;
+      Perform(WM_NEXTDLGCTL,0,0);
+    end;
+  finally
+    FreeAndNil(FrmSelecaoPadrao);
+    FreeAndNil(DtmDadosLoja);
+  end;
+end;
+
+procedure TFrmFiltroRelPedido.btnRelatorioClick(Sender: TObject);
+begin
+  inherited;
+
+  try
+
+    if (chkDataPedido.Checked) and ( dtpDataFim.Date <  dtpDataInicio.Date )then
+    begin
+       exibeMensagem('Data do pedido inicial maior que data final!', tmAviso);
+       Exit;
+    end;
+
+    if (chkDataPrevFaturamento.Checked) and ( dtpDataPrevFaturamentoAte.Date <  dtpDataPrevFaturamentoDe.Date )then
+    begin
+       exibeMensagem('Data previsto faturamento inicial maior que data final!', tmAviso);
+       Exit;
+    end;
+
+    if ( getPedidos) then
+    begin
+       try
+         FrmRelatorioPedido := TFrmRelatorioPedido.Create(nil);
+
+         if chkDataPedido.Checked
+         then
+            FrmRelatorioPedido.RlblPeriodo.Caption := FormatDateTime('dd/mm/yyyy', dtpDataInicio.Date)  + ' à ' +
+                                                      FormatDateTime('dd/mm/yyyy', dtpDataFim.Date)
+         else
+            FrmRelatorioPedido.RlblPeriodo.Caption := 'Todos';
+
+         if chkDataPrevFaturamento.Checked then
+           FrmRelatorioPedido.RlblPrevFaturamento.Caption :=
+                     FormatDateTime('dd/mm/yyyy', dtpDataPrevFaturamentoDe.Date)  + ' à ' +
+                     FormatDateTime('dd/mm/yyyy', dtpDataPrevFaturamentoAte.Date)
+         else
+            FrmRelatorioPedido.RlblPrevFaturamento.Caption := 'Todos';
+
+
+         if rg_TipoRelatorio.ItemIndex = 1 then
+         begin
+           FrmRelatorioPedido.RLSubDetailProduto.Height := 0 ;
+           FrmRelatorioPedido.RLBand7.Height := 0;
+           FrmRelatorioPedido.RLBand6.Height := 0;
+           FrmRelatorioPedido.RLBand8.Height := 0;
+         end;
+         FrmRelatorioPedido.RlReport1.PreviewModal;
+       finally
+         FreeAndNil(FrmRelatorioPedido);
+
+       end;
+    end
+    else
+    begin
+      exibeMensagem('Pedido não encontrado com o filtro informado!',tmAviso);
+    end;
+  finally
+    Screen.Cursor := crDefault;
+  end;
+end;
+
+procedure TFrmFiltroRelPedido.chkDataPedidoClick(Sender: TObject);
+begin
+  inherited;
+  grpDataPedido.Enabled := chkDataPedido.Checked;
+end;
+
+procedure TFrmFiltroRelPedido.chkDataPrevFaturamentoClick(Sender: TObject);
+begin
+  inherited;
+  grpDataPrevFaturamento.Enabled := chkDataPrevFaturamento.Checked;
+end;
+
+procedure TFrmFiltroRelPedido.FormCreate(Sender: TObject);
+begin
+  inherited;
+   DtmDadosRelatorioPedido := TDtmDadosRelatorioPedido.Create(Self);
+   dtpDataInicio.DateTime := DataDB;
+   dtpDataFim.DateTime := DataDB;
+   dtpDataPrevFaturamentoDe.DateTime := DataDB;
+   dtpDataPrevFaturamentoAte.DateTime := DataDB;
+end;
+
+procedure TFrmFiltroRelPedido.FormDestroy(Sender: TObject);
+begin
+  inherited;
+   FreeAndNil(DtmDadosRelatorioPedido);
+end;
+
+function TFrmFiltroRelPedido.getPedidos: Boolean;
+var
+   sFiltroSql:string;
+const
+  ST_ABERTO = 1;
+  ST_FECHADO = 2;
+begin
+   sFiltroSql := '';
+
+   if ( rg_StatusPedido.ItemIndex = ST_ABERTO )then
+      sFiltroSql := ' AND P.STATUS = ''A'' '
+   else if ( rg_StatusPedido.ItemIndex = ST_FECHADO ) then
+      sFiltroSql := ' AND P.STATUS = ''F'' ';
+
+   if ( Trim(edtNumPedido.Text) <> '') then
+      sFiltroSql := sFiltroSql + ' AND P.codigo =  ' + (edtNumPedido.Text);
+
+   if (chkDataPedido.Checked) then
+     sFiltroSql := sFiltroSql + ' AND P.data_pedido between ' +
+                         QuotedStr(FormatDateTime('dd/mm/yyyy', dtpDataInicio.Date)) + ' and ' +
+                         QuotedStr(FormatDateTime('dd/mm/yyyy', dtpDataFim.Date));
+
+   if (chkDataPrevFaturamento.Checked) then
+     sFiltroSql := sFiltroSql + ' AND P.data_prev_faturamento between ' +
+                         QuotedStr(FormatDateTime('dd/mm/yyyy', dtpDataPrevFaturamentoDe.Date)) + ' and ' +
+                         QuotedStr(FormatDateTime('dd/mm/yyyy', dtpDataPrevFaturamentoAte.Date));
+
+
+   if ( Trim(edtCodFornecedor.Text )<>'' ) then
+     sFiltroSql := sFiltroSql + ' AND P.cod_fornecedor = ' + edtCodFornecedor.Text;
+
+   if ( Trim(edtCodLoja.Text ) <> '' ) then
+     sFiltroSql := sFiltroSql + ' AND P.cod_loja =' + edtCodLoja.Text;
+
+
+   with DtmDadosRelatorioPedido do
+   begin
+     cdsPesquisa.Close;
+     QryPesquisa.SQL.Text :=
+     ' select p.codigo  codigo,                                      '+#13+
+     '   p.cod_fornecedor,                                           '+#13+
+     '   f.razao_social fornecedor,                                  '+#13+
+     '   p.cod_loja,                                                 '+#13+
+     '   j.descricao empresa,                                        '+#13+
+     '   p.parcelas_txt,                                             '+#13+
+     '   p.data_pedido,                                              '+#13+
+     '   p.valor_desconto1,                                          '+#13+
+     '   p.valor_desconto2,                                          '+#13+
+     '   p.data_prev_faturamento,                                    '+#13+
+     '   p.valor_pedido                                              '+#13+
+     '    from pedido p                                              '+#13+
+     '    inner join fornecedor f on f.codigo = p.cod_fornecedor     '+#13+
+     '    inner join loja j on j.codigo = p.cod_loja                 '+#13+
+     '    WHERE 1 = 1                                                '+#13+
+         sFiltroSql;
+     try
+        cdsPesquisa.Open;
+     except
+       raise;
+     end;
+     if not ( cdsPesquisa.IsEmpty )  then
+     begin
+       cdsProduto.EmptyDataSet;
+      // cdsProduto.Close;
+       while not ( cdsPesquisa.Eof)  do
+       begin
+         qryProduto.Close;
+         qryProduto.SQL.Text :=
+          '  SELECT                         '+
+          '  CODIGO,                        '+
+          ' COD_PEDIDO,                     '+
+          '  REFERENCIA,                    '+
+          '  DESCRICAO,                     '+
+          '  VALOR_UNITARIO,                '+
+          '   QUANTIDADE,                   '+
+          '  VALOR_TOTAL,                   '+
+          '  case FLG_RECEBIDO  when ''S'' then ''X'' else '''' end  FLG_RECEBIDO                  '+
+          '  FROM   PRODUTO                 '+
+          '  WHERE COD_PEDIDO = :COD_PEDIDO '+
+          '  ORDER BY referencia            ';
+         qryProduto.Parameters[0].Value := cdsPesquisaCODIGO.Value;
+         qryProduto.Open;
+         if not ( qryProduto.IsEmpty)  then
+         begin
+           while not ( qryProduto.Eof )  do
+           begin
+             cdsProduto.Append;
+             cdsProdutoCOD_PEDIDO.Value   := qryProduto.FieldByName('COD_PEDIDO').AsInteger;
+             cdsProdutoCODIGO.Value       := qryProduto.FieldByName('CODIGO').AsInteger;
+             cdsProdutoREFERENCIA.Value   := qryProduto.FieldByName('REFERENCIA').AsString;
+             cdsProdutoDESCRICAO.Value    := qryProduto.FieldByName('DESCRICAO').AsString;
+             cdsProdutovalor_unitario.Value    := qryProduto.FieldByName('VALOR_UNITARIO').AsFloat;
+             cdsProdutoQUANTIDADE.Value   := qryProduto.FieldByName('QUANTIDADE').AsInteger;
+             cdsProdutoVALOR_TOTAL.Value  := qryProduto.FieldByName('VALOR_TOTAL').AsFloat;
+             cdsProdutoFLG_RECEBIDO.Value := qryProduto.FieldByName('FLG_RECEBIDO').AsString;
+             cdsProduto.Post;
+             qryProduto.Next;
+           end;
+         end;
+         cdsPesquisa.Next;
+       end;
+     end;
+   end;
+   Result := DtmDadosRelatorioPedido.cdsPesquisa.RecordCount > 0;
+end;
+
+end.
